@@ -1,0 +1,1 @@
+gcc graph.c -o graph.exe -I ..\Generic_library_c\include -L ..\Generic_library_c\lib -lmy
