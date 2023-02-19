@@ -31,6 +31,8 @@
 
    * [Various Header Files and Struct](#various-header-files-and-struct)
    * [Description Of Comparator](#description-of-comparator) 
+   * [Release Data Structures   ](#release-data-structures)
+   * [Pair Container In C](#pair-container-in-c)
     
 ## Various Header Files and Struct   
 ***
@@ -114,21 +116,38 @@
 
 ## Release Data Structures   
 ***
-### Description of Header Files  :
     
-* In C language, header files contain the set of predefined standard library functions. You request to use a header file 
-    in your program by including it with the C preprocessing directive “#include”.
+* I have a data structure that contains a size and some data. I want to free the memory when I allocate it.
    ```c
-    #include<stdio.h>
-    #include<string.h>
-    #include<my_pair.h>
-    #include<stdlib.h>
-    #include<my_pqueue.h>
-    #include<my_avl_tree.h>
+   void releaseData()
+   {
+   destroyAVLTree(cities);
+   destroyAVLTree(citiesByName);
+   destroyAVLTree(graph);
+   }
    ```
   
+## Pair Container In C   
+***
+    
+*  i created a `pair` in C .  pair  is a ( Struct )container that stores two values (like a tuple). These values may or may not be of the same data-type.
+*  In Project , Every Pair having one `city *` and one `AVLTree * ` Then this `AVLTree *` against data structures again will be having a `Pair` which is  `city *` and `weight *`. 
+   ```c
+   #ifndef __MY_PAIR_H
+   #define __MY_PAIR_H 123
+   typedef struct __$_my_pair
+   {
+   void *first;
+   void *second;
+   }Pair;
+   #endif
+
+     
+   ```  
 
 
+
+  
 
 
     
