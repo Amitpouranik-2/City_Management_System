@@ -29,7 +29,8 @@
 
 
 
-   * [Various Header Files and Struct](#various-header-files-and-struct) 
+   * [Various Header Files and Struct](#various-header-files-and-struct)
+   * [Description Of Comparator](#description-of-comparator) 
     
 ## Various Header Files and Struct   
 ***
@@ -68,9 +69,66 @@
 
    ```
 
+## Description Of Comparator 
+***
 
+    
+*  The comparator function takes two arguments and contains logic to decide their relative order in sorted output.
+   ```c
+   int cityCodeComparator(void *p,void *q)
+   {
+   City *a=(City *)p;
+   City *b=(City *)q;
+   return a->code-b->code;
+   }
 
+   int cityNameComparator(void *p,void *q)
+   {
+   City *a=(City *)p;
+   City *b=(City *)q;
+   return stricmp(a->name,b->name);
+   }
+
+   int adjacentVertexComparator(void *left,void *right)
+   {
+   Pair *leftPair,*rightPair;
+   City *leftCity,*rightCity;
+   leftPair=(Pair *)left;
+   rightPair=(Pair *)right;
+   leftCity=(City *)leftPair->first;
+   rightCity=(City *)rightPair->first;
+   stricmp(leftCity->name,rightCity->name);
+   }
+
+   int graphVertexComparator(void *left,void *right)
+   {
+   Pair *leftPair,*rightPair;
+   City *leftCity,*rightCity;
+   leftPair=(Pair *)left;
+   rightPair=(Pair *)right;
+   leftCity=(City *)leftPair->first;
+   rightCity=(City *)rightPair->first;
+   stricmp(leftCity->name,rightCity->name);
+    }  
+   ```
+
+## Release Data Structures   
+***
+### Description of Header Files  :
+    
+* In C language, header files contain the set of predefined standard library functions. You request to use a header file 
+    in your program by including it with the C preprocessing directive “#include”.
+   ```c
+    #include<stdio.h>
+    #include<string.h>
+    #include<my_pair.h>
+    #include<stdlib.h>
+    #include<my_pqueue.h>
+    #include<my_avl_tree.h>
+   ```
   
+
+
 
 
     
