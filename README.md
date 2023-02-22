@@ -145,10 +145,183 @@
      
    ```  
 
+## Populate Data Structures   
+***
+    
+* 
+   ```c
+    void populateDataStructure(int *success)
+     {
+      FILE *cityFile,*graphFile;
+      int succ,code,acode;
+      City *advCity,*city;
+      Pair *p1,*p2;
+      char m;
+      AVLTree *advTree;
+      int weight,*edgeWeight;
+      City c;
+      if(success)*success=false;
+      cities=createAVLTree(&succ,cityCodeComparator);
+      if(succ==false)
+      {
+      printf("Unable to load data..\n");
+      return;
+      }
+      citiesByName=createAVLTree(&succ,cityNameComparator); 
+      if(succ==false)
+      {
+      printf("Unable to load data...\n");
+      destroyAVLTree(cities);
+      return;
+      }
 
+      cityFile=fopen("city.dat","rb+");
+      if(cityFile!=NULL)
+      {
+      fread(&cityHeader,sizeof(CityHeader),1,cityFile);
+      if(!feof(cityFile))
+      {
+      while(1)
+      {
+      fread(&c,sizeof(City),1,cityFile);
+      if(feof(cityFile))break;
+      city=(City *)malloc(sizeof(City));
+      city->code=c.code;
+      strcpy(city->name,c.name);
+      insertintoAVLTree(cities,city,&succ);
+      insertintoAVLTree(citiesByName,city,&succ);
+      }
+      fclose(cityFile);
+      }
+      }
+      if(cities->size==0)
+      {
+      cityHeader.lastGeneratedCode=0;
+      cityHeader.recordCount=0;
+      }
+      graph=createAVLTree(&succ,graphVertexComparator);
+      graphFile=fopen("graph.dat","r");
+      if(graphFile!=NULL)
+      {
+      while(1)
+      {
+      code=0;
+      m=fgetc(graphFile);
+      if(feof(graphFile))break;
+      code=m-48;
+      while(1)
+      {
+      m=fgetc(graphFile);
+      if(m==',' || m=='#')break;
+      code=(code*10)+m-48;
+      }
+      c.code=code;
+      city=(City *)getfromAVLTree(cities,&c,&succ);
+      p1=(Pair *)malloc(sizeof(Pair));
+      p1->first=(void *)city;
+      advTree=createAVLTree(&succ,adjacentVertexComparator);
+      p1->second=(AVLTree *)advTree;
+      while(1)
+      {
+      acode=0;
+      while(1)
+      {
+      m=fgetc(graphFile);
+      if(m==',')break;
+      acode=(acode*10)+m-48;
+      }
+      weight=0;
+      while(1)
+      {
+      m=fgetc(graphFile);
+      if(m==',' || m=='#' || feof(graphFile))break;
+      weight=(weight*10)+m-48;
+       }
+      c.code=acode;
+      advCity=(City *)getfromAVLTree(cities,&c,&succ);
+      edgeWeight=(int *)malloc(sizeof(int));
+      *edgeWeight=weight;
+      p2=(Pair *)malloc(sizeof(Pair));
+      p2->first=(void *)advCity;
+      p2->second=(void *)edgeWeight;
+      
+      insertintoAVLTree(advTree,p2,&succ);
+      if(m=='#' || feof(graphFile))break;
+       }
+       
+       insertintoAVLTree(graph,p1,&succ);
+       }
+       fclose(graphFile);
+       }
+       if(success)*success=true;
+        }
+
+   ```
 
   
+## Pair Container In C   
+***
+    
+*
+  ```c
+      void addCity()
+      {
+      char m;
+      int succ,code;
+      FILE *file;
+      char name[52];
+      City c,*city;
+      printf("Enter name of the City you want to add : ");
+      fgets(name,52,stdin);
+      fflush(stdin);
+      name[strlen(name)-1]='\0';
+      strcpy(c.name,name);
+      city=(City *)getfromAVLTree(citiesByName,&c,&succ);
+      if(city!=NULL) 
+      {
+      printf("City already exists\n");
+      return;
+      }
+      printf("Do you wanna add City(Y/N) : ");
+      m=getchar();
+      fflush(stdin);
+      if(m!='Y' && m!='y')
+      {
+      printf("City not added\n");
+      return;
+      }
+      cityHeader.lastGeneratedCode++;
+      cityHeader.recordCount++;
+      code=cityHeader.lastGeneratedCode;
+      c.code=code;
+      file=fopen("city.dat","rb+");
+      if(file==NULL)
+      {
+      file=fopen("city.dat","wb+");
+      fwrite(&cityHeader,sizeof(CityHeader),1,file);
+       }
+      else
+      {
+      fseek(file,0,SEEK_END);
+      }
+      fwrite(&c,sizeof(City),1,file);
+      fseek(file,0,SEEK_SET);
+      fwrite(&cityHeader,sizeof(CityHeader),1,file);
+      fclose(file);
+      city=(City *)malloc(sizeof(City));
+      city->code=c.code;
+      strcpy(city->name,c.name);
+      insertintoAVLTree(cities,city,&succ);
+      insertintoAVLTree(citiesByName,city,&succ);
+      printf("City added\n");
+      drawLine('-',50);
+      printf("Press ENTER to continue..."); 
+      getchar();
+      fflush(stdin);
+      }
 
+     
+   ```  
 
     
     
