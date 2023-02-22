@@ -33,6 +33,8 @@
    * [Description Of Comparator](#description-of-comparator) 
    * [Release Data Structures   ](#release-data-structures)
    * [Pair Container In C](#pair-container-in-c)
+   * [Populate Data Structures](#populate-data-structures)
+   * [Add City ](#add-city)
     
 ## Various Header Files and Struct   
 ***
@@ -259,7 +261,7 @@
    ```
 
   
-## Pair Container In C   
+## Add City    
 ***
     
 *
@@ -323,6 +325,132 @@
      
    ```  
 
+## Edit City   
+***
+    
+* Edit city
+   ```c
+    void editCity()
+    {
+    CityHeader cHeader;
+    int x,succ,code;
+    char name[52],newName[52],m;
+    City *city1,*city2,c;
+    FILE *file;
+    printf("EDIT MODULE\n");
+    printf("Enter name of the City to EDIT : ");
+    fgets(name,52,stdin);
+    fflush(stdin);
+    name[strlen(name)-1]='\0';
+    strcpy(c.name,name);
+    city1=(City *)getfromAVLTree(citiesByName,&c,&succ);
+    if(!succ)
+    {
+    printf("City doesn't exist\n");
+    return;
+    }
+    printf("Enter new Name : ");
+    fgets(newName,52,stdin);
+    fflush(stdin);
+    newName[strlen(newName)-1]='\0';
+    if(strcmp(newName,name)==0)
+    {
+    printf("No need to update\n");
+    return;
+    }
+    strcpy(c.name,newName);
+    city2=(City *)getfromAVLTree(citiesByName,&c,&succ);
+    if(succ && city1->code!=city2->code)
+    {
+    printf("This city already exists\n");
+    return;
+    }
+    printf("Do you wanna update(Y/N) : ");
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y')
+    {
+    printf("City NOT edited\n");
+    return;
+    }
+    file=fopen("city.dat","rb+");
+    fread(&cityHeader,sizeof(CityHeader),1,file);
+    while(1)
+     {
+    x=ftell(file);
+    fread(&c,sizeof(City),1,file);
+    if(strcmp(name,c.name)==0)break;
+     }
+    fseek(file,x,SEEK_SET);
+    strcpy(c.name,newName);
+    c.code=city1->code;
+    fwrite(&c,sizeof(City),1,file);
+     fclose(file);
+     strcpy(c.name,name);
+     c.code=city1->code;
+     strcpy(city1->name,newName);
+    removefromAVLTree(citiesByName,&c,&succ);
+    removefromAVLTree(cities,&c,&succ);
+    insertintoAVLTree(citiesByName,city1,&succ);
+    insertintoAVLTree(cities,city1,&succ);
+    printf("City EDITED, press ENTER to continue...");
+    getchar();
+    fflush(stdin);
+      }
+
+   
+   
+   
+   ```
+    
+      
+## Search City   
+***
+    
+* Search City
+```c
+  void searchCity()
+  {
+  int succ,*advWeight;
+  char name[52];
+  Pair *graphPair,*advPair,gPair;
+  AVLTree *advTree;
+  AVLTreeInOrderIterator advIterator;
+  City *city,c,*advCity;
+  printf("Enter a city name to search : ");
+  fgets(name,52,stdin);
+  fflush(stdin);
+  name[strlen(name)-1]='\0';
+  strcpy(c.name,name);
+  city=(City *)getfromAVLTree(citiesByName,&c,&succ);
+  if(succ)
+  {
+  printf("Found\n");
+  printf("%s\n",city->name);
+  }
+  else 
+  {
+  printf("%s doesn't exists\n",name);
+  return;
+  }
+  gPair.first=(void *)city;
+  graphPair=(Pair *)getfromAVLTree(graph,&gPair,&succ);
+  if(graphPair==NULL)return;
+  advTree=(AVLTree *)graphPair->second;
+  advIterator=getAVLTreeInOrderIterator(advTree,&succ);
+  printf("Following are the cities adjacent to %s\n",city->name);
+  while(HasNextInorderelementAVLTree(&advIterator))
+  {
+  advPair=(Pair *)getnextinorderelementfromAVLTree(&advIterator,&succ);
+  advCity=(City *)advPair->first;
+  advWeight=(int *)advPair->second;
+  printf("City : %-18s | Distance : %d \n",advCity->name,*advWeight);
+  }
+  }
+
+ 
+     
+   ```  
     
     
   
