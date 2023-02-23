@@ -35,6 +35,11 @@
    * [Pair Container In C](#pair-container-in-c)
    * [Populate Data Structures](#populate-data-structures)
    * [Add City ](#add-city)
+   * [Edit City](#edit-city)
+   * [Search City](#search-city)
+   * [Display List Of Cities](#display-list-of-cities)
+   * [Remove City](#remove-city)
+   
     
 ## Various Header Files and Struct   
 ***
@@ -451,6 +456,149 @@
  
      
    ```  
+## Remove City   
+***
     
+*  
+ ```c
+  
+    void removeCity()
+    {
+    FILE *file;
+    FILE *tmpFile;
+    CityHeader cHeader;
+    char name[52],m;
+    int x,succ;
+    City c,*city;
+    printf("DELETE MODULE\n");
+    printf("Enter name of the City to delete : ");
+    fgets(name,52,stdin);
+    fflush(stdin);
+    name[strlen(name)-1]='\0';
+    strcpy(c.name,name);
+    city=(City *)getfromAVLTree(citiesByName,&c,&succ);
+    if(!succ)
+    {
+    printf("City doesn't exists\n");
+    return;
+     }
+    printf("City Found\nName : %s\n",city->name);
+    printf("Do you wanna delete City(Y/N) : ");
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y')
+    {
+    printf("City not removed\n");
+    return;
+     }
+    file=fopen("city.dat","rb");
+    tmpFile=fopen("tmp.tmp","wb");
+    fread(&cHeader,sizeof(CityHeader),1,file);
+    cityHeader.recordCount--;
+    fwrite(&cityHeader,sizeof(CityHeader),1,tmpFile);
+     while(1)
+     {
+    fread(&c,sizeof(City),1,file);
+    if(feof(file))break;
+    if(stricmp(city->name,c.name)!=0)
+    {
+    fwrite(&c,sizeof(City),1,tmpFile);
+    }
+    }
+    fclose(file);
+    fclose(tmpFile);
+    file=fopen("city.dat","wb");
+    tmpFile=fopen("tmp.tmp","rb");
+    fread(&cHeader,sizeof(CityHeader),1,tmpFile);
+    fwrite(&cHeader,sizeof(CityHeader),1,file);
+    while(1)
+    {
+    fread(&c,sizeof(City),1,tmpFile);
+    if(feof(tmpFile))break;
+    fwrite(&c,sizeof(City),1,file);
+    }
+    fclose(file);
+    fclose(tmpFile);
+    tmpFile=fopen("tmp.tmp","wb");
+    fclose(tmpFile);
+    c.code=city->code;
+    strcpy(c.name,city->name);
+    removefromAVLTree(cities,&c,&succ);
+    removefromAVLTree(citiesByName,&c,&succ);
+    free(city);
+    printf("City %s deleted, Press ENTER to continue....",name);
+    getchar();
+    fflush(stdin);
+    }
+
+  
+  
+     
+   ```  
+
+
+
+
+## Display List Of Cities  
+***
     
+
+ ```c
+    void displayListOfCity()
+    {
+    City *city;
+    int pageNo,sno,succ;
+    AVLTreeInOrderIterator iterator;
+    sno=0;
+    int newPage=5;
+    if(cities->size==0)
+    {
+    drawLine('-',50);
+    printf("NO Records added.press ENTER to continue....\n"); 
+    drawLine('-',50);
+    getchar();  
+    fflush(stdin);
+    return;
+    }
+    iterator=getAVLTreeInOrderIterator(citiesByName,&succ);
+    if(succ)
+    {
+    pageNo=0;
+    while(HasNextInorderelementAVLTree(&iterator))
+    {
+    city=(City *)getnextinorderelementfromAVLTree(&iterator,&succ);
+    if(sno%newPage==0)
+    {
+    pageNo++;
+    drawLine('-',50);
+    printf("S NO.   NAME OF THE CITIES %d\n",pageNo);
+    drawLine('-',50);
+    }
+    sno++;
+    printf("%2d       %-52s %d\n",sno,city->name,city->code);
+    if(sno%newPage==0)
+     {
+    drawLine('-',50);
+    printf("press ENTER to continue...");
+    getchar();
+    fflush(stdin);
+     }
+     }
+    if(cities->size==0) 
+    {
+    drawLine('-',50);
+    printf("NO Records added.press ENTER to continue....\n"); 
+    drawLine('-',50);
+    getchar();
+    fflush(stdin);
+     return;
+     }
+     }
+     drawLine('-',50);
+     }
+     
+  ```  
+
+
+  
   
