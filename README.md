@@ -39,6 +39,9 @@
    * [Search City](#search-city)
    * [Display List Of Cities](#display-list-of-cities)
    * [Remove City](#remove-city)
+   * [Add Adjacent Vertex Against City](#add-adjacent-vertex-against-city)
+   * [Remove Adjacent Vertex Against City](#remove-adjacent-vertex-against-city)
+   
    
     
 ## Various Header Files and Struct   
@@ -600,5 +603,233 @@
   ```  
 
 
+## Add Adjacent Vertex Against City  
+***
+    
+*
+ ```c
+    void addAdjacentVertex()
+    {
+    AVLTreeInOrderIterator graphIterator,advIterator;
+    FILE *graphFile;
+    char m,name[52],advName[52];
+    int shouldAppend,succ,weight,*edgeWeight,*wgt;
+    City *gct,c,*city,*advCity,*act;
+    Pair *graphPair,*advPair,*gp,*ap,aPair,gPair;
+    AVLTree *advt,*advTree;
+
+    printf("Enter City against which you wanna add adjacent city : ");
+    fgets(name,52,stdin);
+    fflush(stdin);
+    name[strlen(name)-1]='\0';
+    strcpy(c.name,name);
+    city=(City *)getfromAVLTree(citiesByName,&c,&succ);
+    if(!succ)
+    {
+    printf("This City doesn't exist\n");
+    printf("Press ENTER to continue...");
+    getchar();
+    fflush(stdin);
+    return;
+    }
+    shouldAppend=0;
+    gPair.first=(void *)city;
+    graphPair=(Pair *)getfromAVLTree(graph,&gPair,&succ);
+    if(!succ)
+    {
+    shouldAppend=1;
+    graphPair=NULL;
+    }
+    if(graphPair!=NULL)advTree=(AVLTree *)graphPair->second;
+
+    while(1)
+    { 
+    printf("Enter adjacent  City : ");
+    fgets(advName,52,stdin);
+    fflush(stdin);
+    advName[strlen(advName)-1]='\0';
+    strcpy(c.name,advName);
+    advCity=(City *)getfromAVLTree(citiesByName,&c,&succ);
+    if(!succ)
+    {
+    printf("City %s doesn't exist\n",advName);
+    printf("Wanna add another city as adjacent to %s(Y/N) : ",city->name);
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y')break;
+    continue;
+    }
+    aPair.first=(void *)advCity;
+    if(graphPair!=NULL)
+    {
+    advPair=(Pair *)getfromAVLTree(advTree,&aPair,&succ);
+    if(succ)
+    {
+    printf("%s is already adjacent to %s\n",advCity->name,city->name);
+    printf("Wanna add another city (Y/N) : ");
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y')break;
+    continue;
+    }
+    }
+    
+    printf("Enter weight from %s to %s : ",city->name,advCity->name);
+    scanf("%d",&weight);
+    fflush(stdin);
+    if(weight<=0)
+    {
+    printf("Invalid Entry\nWanna add another adjacent city (Y/N) : ");
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y');break;
+    continue;
+    }
+    if(graphPair!=NULL)advTree=(AVLTree *)graphPair->second;
+    advPair=(Pair *)malloc(sizeof(Pair));
+    advPair->first=(void *)advCity;
+    edgeWeight=(int *)malloc(sizeof(int));
+    *edgeWeight=weight;
+    advPair->second=(void *)edgeWeight;
+    if(graphPair==NULL)
+    {
+    graphPair=(Pair *)malloc(sizeof(Pair));
+    graphPair->first=(void *)city;
+    advTree=createAVLTree(&succ,adjacentVertexComparator);
+    graphPair->second=(void *)advTree;
+    insertintoAVLTree(advTree,advPair,&succ);
+    insertintoAVLTree(graph,graphPair,&succ);
+    graphFile=fopen("graph.dat","a");
+    fprintf(graphFile,"%d,%d,%d#",city->code,advCity->code,weight);
+    fclose(graphFile);
+    }
+    else if(shouldAppend==1)
+    {
+    insertintoAVLTree(advTree,advPair,&succ);
+    graphFile=fopen("graph.dat","r+");
+    fseek(graphFile,-1,SEEK_END);
+    fprintf(graphFile,",%d,%d#",advCity->code,weight);
+    fclose(graphFile);
+    }
+    else
+    {
+    insertintoAVLTree(advTree,advPair,&succ);
+    createGraphFile();
+    }
+    printf("Information saved\n");
+    printf("Wanna add more adjacent city to %s(Y/N) : ",city->name);
+    m=getchar();
+    fflush(stdin);
+    if(m!='y' && m!='Y')break;
+    continue;
+    }
+    }  
+  ```  
   
   
+## Remove Adjacent Vertex Against City   
+***
+    
+* 
+
+   ```c
+     void removeAdjacentVertex()
+     {
+     AVLTreeInOrderIterator graphIterator,advIterator;
+     FILE *graphFile;
+     char m,name[52],advName[52];
+     int shouldAppend,succ,weight,*edgeWeight,*wgt;  
+     City *gct,c,*city,*advCity,*act;
+     Pair *graphPair,*advPair,*gp,*ap,aPair,gPair;
+     AVLTree *advt,*advTree;
+
+     printf("Enter City against which you wanna remove adjacent city : ");
+     fgets(name,52,stdin);
+     fflush(stdin);
+     name[strlen(name)-1]='\0';
+     strcpy(c.name,name);
+     city=(City *)getfromAVLTree(citiesByName,&c,&succ);
+     if(!succ)
+     {
+     printf("This City doesn't exist\n");
+     printf("Press ENTER to continue...");
+     getchar();
+     fflush(stdin);
+     return;
+     }
+     gPair.first=(void *)city;
+     graphPair=(Pair *)getfromAVLTree(graph,&gPair,&succ); 
+     if(graphPair==NULL)
+     {
+     printf("There is no Adjacent City of this City\nPress ENTER to continue...");
+     getchar();
+     fflush(stdin);
+     return;
+     }
+     advTree=(AVLTree *)graphPair->second;
+     printf("Enter Adjacent City : ");
+     fgets(advName,52,stdin);
+     fflush(stdin);
+     advName[strlen(advName)-1]='\0';
+     strcpy(c.name,advName);
+     advCity=(City *)getfromAVLTree(citiesByName,&c,&succ);
+     if(!succ)
+     {
+     printf("City doesn't exist\nPress ENTER to continue...");
+     getchar();
+     fflush(stdin);
+     return;
+     }
+     aPair.first=(void *)advCity;
+     advPair=(Pair *)getfromAVLTree(advTree,&aPair,&succ);
+     if(!succ)
+     {
+     printf("City doesn't exist\nPress ENTER to continue...");
+     getchar();
+     fflush(stdin);
+     return;
+     }
+     removefromAVLTree(advTree,advPair,&succ);
+     createGraphFile();
+     printf("Information saved\nPress ENTER to continue..."); 
+     getchar();
+     fflush(stdin);
+     }
+
+    
+    
+     void createGraphFile()
+     {
+     FILE *graphFile;
+     AVLTreeInOrderIterator graphIterator,advIterator;
+     Pair *gp,*ap;
+     City *gct,*act;
+     AVLTree *advt;
+     int *wgt,succ;
+     graphFile=fopen("graph.dat","w");
+     graphIterator=getAVLTreeInOrderIterator(graph,&succ);
+     while(HasNextInorderelementAVLTree(&graphIterator))
+     {
+     gp=(Pair *)getnextinorderelementfromAVLTree(&graphIterator,&succ);
+     gct=(City *)gp->first;
+     advt=(AVLTree *)gp->second;
+     fprintf(graphFile,"%d,",gct->code);
+     advIterator=getAVLTreeInOrderIterator(advt,&succ);
+     while(HasNextInorderelementAVLTree(&advIterator))
+     {
+     ap=(Pair *)getnextinorderelementfromAVLTree(&advIterator,&succ);
+     act=(City *)ap->first;
+     wgt=(int *)ap->second;
+     if(HasNextInorderelementAVLTree(&advIterator))
+     {
+     fprintf(graphFile,"%d,%d,",act->code,*wgt);
+     }
+     else 
+     {
+     fprintf(graphFile,"%d,%d#",act->code,*wgt);
+     }
+     }
+     }
+     fclose(graphFile);
+     }
+ ```
