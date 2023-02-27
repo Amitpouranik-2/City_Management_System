@@ -331,7 +331,24 @@
       }
 
      
-   ```  
+   ``` 
+   
+   
+   
+   
+   
+   
+   ![add](https://user-images.githubusercontent.com/109301830/221589013-923a8347-74bf-4c1b-b769-c04567413cf5.jpg)
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
 
 ## Edit City   
 ***
@@ -410,6 +427,26 @@
    
    
    ```
+   
+   
+   
+   
+   
+   
+   
+   ![edit](https://user-images.githubusercontent.com/109301830/221589730-bcd9e778-dd61-4c52-ba9c-a10029114634.jpg)
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
     
       
 ## Search City   
@@ -459,6 +496,25 @@
  
      
    ```  
+   
+   
+   ![search](https://user-images.githubusercontent.com/109301830/221590097-534eb35f-b5a9-447a-ab4b-8bad741b3406.jpg)
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
 ## Remove City   
 ***
     
@@ -538,7 +594,11 @@
   
      
    ```  
+   
+   
+   
 
+![delete](https://user-images.githubusercontent.com/109301830/221590431-700763fa-cf8d-4c1a-baf9-5efe79eada39.jpg)
 
 
 
@@ -600,7 +660,22 @@
      drawLine('-',50);
      }
      
+     
   ```  
+
+
+
+![display](https://user-images.githubusercontent.com/109301830/221591225-901edbec-2240-4923-b2d0-98afe6ee2eec.jpg)
+
+
+
+
+
+
+
+
+
+
 
 
 ## Add Adjacent Vertex Against City  
@@ -725,7 +800,20 @@
     }
     }  
   ```  
-  
+
+
+
+
+
+![add adjacent city](https://user-images.githubusercontent.com/109301830/221591479-fd01834e-8594-4a84-a24b-5bc48521673b.jpg)
+
+
+
+
+
+
+
+
   
 ## Remove Adjacent Vertex Against City   
 ***
@@ -832,4 +920,211 @@
      }
      fclose(graphFile);
      }
- ```
+
+  ```
+
+
+
+
+
+![remove adjacent city](https://user-images.githubusercontent.com/109301830/221600459-2b8219ac-df01-40a0-9ae6-13c015074083.jpg)
+
+
+
+
+
+## Get Route   
+***
+    
+ ```c
+ 
+   void searchRoute()
+   {
+   int distanceComparator(void *left,void *right)
+   {
+   Pair *leftPair,*rightPair;
+   int *leftDistance,*rightDistance;
+   leftPair=(Pair *)left;
+   rightPair=(Pair *)right;
+   leftDistance=(int *)leftPair->second;
+   rightDistance=(int *)rightPair->second;
+   return *leftDistance-*rightDistance;
+   }
+   typedef struct _path
+   {
+   City *city;
+   City *arrivedFromCity;
+   int totalDistanceFromStarting;
+   }Path;
+   int pathComparator(void *left,void *right)
+   {
+   Path *leftPath,*rightPath;
+   leftPath=(Path *)left;
+   rightPath=(Path *)right;
+   return leftPath->city->code-rightPath->city->code;;
+   }
+
+   AVLTreeInOrderIterator iterator;
+   int i,*td,*totalDistance,*totalDistanceFromSourceCity,*edgeWeight,sum,found,routeExists;
+   int succ;
+   Path *pathStructurePointer,pathStructure;
+   Pair *graphPair,gPair,*advPair;
+   AVLTree *pathTree,*advTree;
+   PQueue *pqueue;
+   Stack *stack;
+   Pair *tmpPair,*PQueuePair;
+   char sourceCityName[52],targetCityName[52];
+   City c,*city,*sourceCity,*targetCity,*advCity,*tmpCity;
+
+   
+   printf("Enter SOURCE city : ");
+   fgets(sourceCityName,52,stdin);
+   fflush(stdin);
+   sourceCityName[strlen(sourceCityName)-1]='\0';
+   strcpy(c.name,sourceCityName);
+   sourceCity=(City *)getfromAVLTree(citiesByName,&c,&succ);
+   if(!succ)
+   {
+   printf("City DOESN'T exists\n");
+   return;
+   }
+
+   printf("Enter TARGET city : ");
+   fgets(targetCityName,52,stdin);
+   fflush(stdin);
+   targetCityName[strlen(targetCityName)-1]='\0';
+   strcpy(c.name,targetCityName);
+   targetCity=(City *)getfromAVLTree(citiesByName,&c,&succ);
+   if(!succ)
+   {
+   printf("City DOESN'T exists\n");
+   return;
+   }
+
+
+   pathTree=createAVLTree(&succ,pathComparator);
+   pqueue=createPQueue(distanceComparator,&succ);
+   PQueuePair=(Pair *)malloc(sizeof(Pair));
+   PQueuePair->first=sourceCity;
+   totalDistanceFromSourceCity=(int *)malloc(sizeof(int));
+   *totalDistanceFromSourceCity=0;
+   PQueuePair->second=totalDistanceFromSourceCity;
+   AddtoPQueue(pqueue,PQueuePair,&succ);
+   pathStructurePointer=(Path *)malloc(sizeof(Path));
+   pathStructurePointer->city=sourceCity;
+   pathStructurePointer->arrivedFromCity=NULL;
+   pathStructurePointer->totalDistanceFromStarting=0;
+   insertintoAVLTree(pathTree,pathStructurePointer,&succ);
+   routeExists=0;
+   while(!isPQueueEmpty(pqueue))
+   {
+   PQueuePair=(Pair *)RemovefromPQueue(pqueue,&succ);
+   city=(City *)PQueuePair->first;
+   if(city==targetCity)
+   {
+   routeExists=1;
+   break;
+   }
+   totalDistance=PQueuePair->second;
+   gPair.first=city; 
+   graphPair=(Pair *)getfromAVLTree(graph,&gPair,&succ);
+   if(!succ)continue;
+   if(graphPair->second==NULL)continue;
+   advTree=(AVLTree *)graphPair->second;
+   iterator=getAVLTreeInOrderIterator(advTree,&succ);
+   while(HasNextInorderelementAVLTree(&iterator))
+   {
+   advPair=getnextinorderelementfromAVLTree(&iterator,&succ);
+   advCity=(City *)advPair->first;
+   edgeWeight=(int *)advPair->second;
+   sum=*edgeWeight+*totalDistance;
+   pathStructure.city=advCity;
+   pathStructurePointer=getfromAVLTree(pathTree,&pathStructure,&succ);
+   if(succ)
+   {
+   if(sum>pathStructurePointer->totalDistanceFromStarting)continue;
+   pathStructurePointer->totalDistanceFromStarting=sum;
+   pathStructurePointer->arrivedFromCity=city;
+   found=false;
+   for(i=0;i<getsizeofPQueue(pqueue);i++)
+   {
+   tmpPair=(Pair *)getElementfromPQueue(pqueue,i,&succ);
+   tmpCity=tmpPair->first;
+   if(tmpCity->code==advCity->code)
+   {
+   found=true;
+   break;
+   }
+   }
+   if(found)
+   {
+   *td=sum;
+   tmpPair->second=td;
+   UpdateElementInPQueue(pqueue,i,tmpPair,&succ);
+   continue;
+   }
+   PQueuePair=(Pair *)malloc(sizeof(Pair));
+   PQueuePair->first=advCity;
+   totalDistanceFromSourceCity=(int *)malloc(sizeof(int));
+   *totalDistanceFromSourceCity=sum;
+   PQueuePair->second=totalDistanceFromSourceCity;
+   AddtoPQueue(pqueue,PQueuePair,&succ);
+   }
+   else
+   {
+   PQueuePair=(Pair *)malloc(sizeof(Pair));
+   PQueuePair->first=advCity;
+   td=(int *)malloc(sizeof(int));
+   *td=sum;
+   PQueuePair->second=td;
+   AddtoPQueue(pqueue,PQueuePair,&succ);
+
+   pathStructurePointer=(Path *)malloc(sizeof(Path));
+   pathStructurePointer->city=advCity;
+   pathStructurePointer->arrivedFromCity=city;
+   pathStructurePointer->totalDistanceFromStarting=sum;
+   insertintoAVLTree(pathTree,pathStructurePointer,&succ);
+   }
+   }
+   }
+   if(!routeExists)
+   {
+   printf("NO ROUTE EXISTS from %s to %s\n",sourceCityName,targetCityName);
+   return;
+   }
+   stack=createStack(&succ);
+   pathStructure.city=targetCity;
+   while(1)
+   {
+   pathStructurePointer=getfromAVLTree(pathTree,&pathStructure,&succ);
+   pushonStack(stack,pathStructurePointer,&succ);
+   if(pathStructurePointer->city==sourceCity)break;
+   pathStructure.city=pathStructurePointer->arrivedFromCity;
+   }
+   while(!isStackempty(stack))
+   {
+   pathStructurePointer=(Path *)popfromStack(stack,&succ);
+   printf("%s (%d)\n",pathStructurePointer->city->name,pathStructurePointer->totalDistanceFromStarting);
+   }
+   }
+
+ 
+ 
+ 
+   ```
+   
+   
+   
+   
+   ![get route](https://user-images.githubusercontent.com/109301830/221600617-d9596dd6-ba68-46a1-b432-04c013e3b4ad.jpg)
+
+
+
+
+
+
+
+
+
+
+
